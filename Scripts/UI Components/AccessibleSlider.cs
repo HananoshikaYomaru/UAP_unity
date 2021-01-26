@@ -4,56 +4,56 @@ using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-[AddComponentMenu("Accessibility/UI/Accessible Slider")]
+[AddComponentMenu("Accessibility/UI/Accessible Slider"), RequireComponent(typeof(Slider))]
 public class AccessibleSlider : UAP_BaseElement
 {
-	//! Will read out percentage of the slider instead of actual value
-	public bool m_ReadPercentages = true;
+    //! Will read out percentage of the slider instead of actual value
+    public bool m_ReadPercentages = true;
 
-	//! Increment by which the sliders is moved per swipe (Default is 5%)
-	public float m_Increments = 5.0f;
-	public bool m_IncrementInPercent = true;
-	public bool m_WholeNumbersOnly = true;
+    //! Increment by which the sliders is moved per swipe (Default is 5%)
+    public float m_Increments = 5.0f;
+    public bool m_IncrementInPercent = true;
+    public bool m_WholeNumbersOnly = true;
 
-	//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 
-	AccessibleSlider()
-	{
-		m_Type = AccessibleUIGroupRoot.EUIElement.ESlider;
-	}
+    AccessibleSlider()
+    {
+        m_Type = AccessibleUIGroupRoot.EUIElement.ESlider;
+    }
 
-	//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 
-	public override bool IsElementActive()
-	{
-		// Return whether this button is usable, and visible
-		if (!base.IsElementActive())
-			return false;
+    public override bool IsElementActive()
+    {
+        // Return whether this button is usable, and visible
+        if (!base.IsElementActive())
+            return false;
 
-		if (m_ReferenceElement != null)
-			if (!m_ReferenceElement.gameObject.activeInHierarchy)
-				return false;
+        if (m_ReferenceElement != null)
+            if (!m_ReferenceElement.gameObject.activeInHierarchy)
+                return false;
 
-		if (!UAP_AccessibilityManager.GetSpeakDisabledInteractables())
-			if (!IsInteractable())
-				return false;
+        if (!UAP_AccessibilityManager.GetSpeakDisabledInteractables())
+            if (!IsInteractable())
+                return false;
 
-		return true;
-	}
+        return true;
+    }
 
-	//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 
-	public override bool IsInteractable()
-	{
-		// Check if the UI Element is enabled and allows interaction
-		Slider slider = GetSlider();
-		if (slider != null)
-		{
-			if (slider.enabled == false || slider.IsInteractable() == false)
-				return false;
+    public override bool IsInteractable()
+    {
+        // Check if the UI Element is enabled and allows interaction
+        Slider slider = GetSlider();
+        if (slider != null)
+        {
+            if (slider.enabled == false || slider.IsInteractable() == false)
+                return false;
 
-			return true;
-		}
+            return true;
+        }
 
 #if ACCESS_NGUI
 		UISlider nGUIComponent = GetNGUISlider();
@@ -66,23 +66,23 @@ public class AccessibleSlider : UAP_BaseElement
 		}
 #endif
 
-		return true;
-	}
+        return true;
+    }
 
-	//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 
-	Slider GetSlider()
-	{
-		Slider refElement = null;
-		if (m_ReferenceElement != null)
-			refElement = m_ReferenceElement.GetComponent<Slider>();
-		if (refElement == null)
-			refElement = GetComponent<Slider>();
+    Slider GetSlider()
+    {
+        Slider refElement = null;
+        if (m_ReferenceElement != null)
+            refElement = m_ReferenceElement.GetComponent<Slider>();
+        if (refElement == null)
+            refElement = GetComponent<Slider>();
 
-		return refElement;
-	}
+        return refElement;
+    }
 
-	//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 
 #if ACCESS_NGUI
 	private UISlider GetNGUISlider()
@@ -97,26 +97,26 @@ public class AccessibleSlider : UAP_BaseElement
 	}
 #endif
 
-	//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 
-	public override string GetCurrentValueAsText()
-	{
-		bool foundValue = false;
-		float value = -1.0f;
+    public override string GetCurrentValueAsText()
+    {
+        bool foundValue = false;
+        float value = -1.0f;
 
-		Slider slider = GetSlider();
-		if (slider != null)
-		{
-			foundValue = true;
-			value = slider.value;
+        Slider slider = GetSlider();
+        if (slider != null)
+        {
+            foundValue = true;
+            value = slider.value;
 
-			if (m_ReadPercentages)
-			{
-				// Convert the slider value between min and max to percentage
-				value = (value - slider.minValue) / (slider.maxValue - slider.minValue);
-				value *= 100.0f;
-			}
-		}
+            if (m_ReadPercentages)
+            {
+                // Convert the slider value between min and max to percentage
+                value = (value - slider.minValue) / (slider.maxValue - slider.minValue);
+                value *= 100.0f;
+            }
+        }
 
 #if ACCESS_NGUI
 		UISlider nGUISlider = GetNGUISlider();
@@ -133,30 +133,30 @@ public class AccessibleSlider : UAP_BaseElement
 		}
 #endif
 
-		if (foundValue)
-		{
+        if (foundValue)
+        {
 
-			string valueAsText = value.ToString("0.##");
+            string valueAsText = value.ToString("0.##");
 
-			if (m_WholeNumbersOnly || (slider != null && slider.wholeNumbers))
-				valueAsText = value.ToString("0");
+            if (m_WholeNumbersOnly || (slider != null && slider.wholeNumbers))
+                valueAsText = value.ToString("0");
 
-			if (m_ReadPercentages)
-				valueAsText += "%";
+            if (m_ReadPercentages)
+                valueAsText += "%";
 
-			return valueAsText;
-		}
+            return valueAsText;
+        }
 
-		return "";
-	}
+        return "";
+    }
 
-	//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 
-	public override bool Increment()
-	{
-		Slider slider = GetSlider();
-		if (slider != null && slider.value == slider.maxValue)
-			return false;
+    public override bool Increment()
+    {
+        Slider slider = GetSlider();
+        if (slider != null && slider.value == slider.maxValue)
+            return false;
 
 #if ACCESS_NGUI
 		UISlider nGUISlider = GetNGUISlider();
@@ -164,17 +164,17 @@ public class AccessibleSlider : UAP_BaseElement
 			return false;
 #endif
 
-		ModifySliderValue(m_Increments);
-		return true;
-	}
+        ModifySliderValue(m_Increments);
+        return true;
+    }
 
-	//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 
-	public override bool Decrement()
-	{
-		Slider slider = GetSlider();
-		if (slider != null && slider.value == slider.minValue)
-			return false;
+    public override bool Decrement()
+    {
+        Slider slider = GetSlider();
+        if (slider != null && slider.value == slider.minValue)
+            return false;
 
 #if ACCESS_NGUI
 		UISlider nGUISlider = GetNGUISlider();
@@ -182,26 +182,26 @@ public class AccessibleSlider : UAP_BaseElement
 			return false;
 #endif
 
-		ModifySliderValue(-m_Increments);
-		return true;
-	}
+        ModifySliderValue(-m_Increments);
+        return true;
+    }
 
-	//////////////////////////////////////////////////////////////////////////
-	
-	private void ModifySliderValue(float change)
-	{
-		Slider slider = GetSlider();
-		if (slider != null)
-		{
-			// Modify value
-			float incrementValue = change;
-			if (m_IncrementInPercent)
-			{
-				incrementValue = (slider.maxValue - slider.minValue) * (incrementValue / 100.0f);
-			}
-			slider.value += incrementValue;
-		}
-		
+    //////////////////////////////////////////////////////////////////////////
+
+    private void ModifySliderValue(float change)
+    {
+        Slider slider = GetSlider();
+        if (slider != null)
+        {
+            // Modify value
+            float incrementValue = change;
+            if (m_IncrementInPercent)
+            {
+                incrementValue = (slider.maxValue - slider.minValue) * (incrementValue / 100.0f);
+            }
+            slider.value += incrementValue;
+        }
+
 #if ACCESS_NGUI
 		UISlider nGUISlider = GetNGUISlider();
 		if (nGUISlider != null)
@@ -217,21 +217,21 @@ public class AccessibleSlider : UAP_BaseElement
 		}
 #endif
 
-	}
+    }
 
-	//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 
-	protected override void OnHoverHighlight(bool enable)
-	{
-		Slider slider = GetSlider();
-		if (slider != null)
-		{
-			var pointer = new PointerEventData(EventSystem.current); // pointer event for Execute
-			if (enable)
-				slider.OnPointerEnter(pointer);
-			else
-				slider.OnPointerExit(pointer);
-		}
+    protected override void OnHoverHighlight(bool enable)
+    {
+        Slider slider = GetSlider();
+        if (slider != null)
+        {
+            var pointer = new PointerEventData(EventSystem.current); // pointer event for Execute
+            if (enable)
+                slider.OnPointerEnter(pointer);
+            else
+                slider.OnPointerExit(pointer);
+        }
 
 #if ACCESS_NGUI
 		UISlider nGUISlider = GetNGUISlider();
@@ -247,20 +247,20 @@ public class AccessibleSlider : UAP_BaseElement
 			}
 		}
 #endif
-	}
+    }
 
-	//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 
-	public override bool AutoFillTextLabel()
-	{
-		// If there is no name label set, don't set anything as name
-		if (!base.AutoFillTextLabel())
-			m_Text = "";
+    public override bool AutoFillTextLabel()
+    {
+        // If there is no name label set, don't set anything as name
+        if (!base.AutoFillTextLabel())
+            m_Text = "";
 
-		return false;
-	}
+        return false;
+    }
 
-	//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 
 
 }

@@ -212,7 +212,7 @@ public class UAP_AccessibilityManager : MonoBehaviour
 
     //////////////////////////////////////////////////////////////////////////
 
-    static private UAP_AccessibilityManager instance = null;
+    static public UAP_AccessibilityManager instance = null;
     static bool isDestroyed = false;
     static bool m_IsInitialized = false;
     static bool m_IsEnabled = false;
@@ -221,8 +221,8 @@ public class UAP_AccessibilityManager : MonoBehaviour
     List<AccessibleUIGroupRoot> m_ActiveContainers = new List<AccessibleUIGroupRoot>();
     List<List<AccessibleUIGroupRoot>> m_SuspendedContainers = new List<List<AccessibleUIGroupRoot>>();
     List<int> m_SuspendedActiveContainerIndex = new List<int>();
-    AccessibleUIGroupRoot.Accessible_UIElement m_CurrentItem = null;
-    AccessibleUIGroupRoot.Accessible_UIElement m_PreviousItem = null;
+    public AccessibleUIGroupRoot.Accessible_UIElement m_CurrentItem = null;
+    public AccessibleUIGroupRoot.Accessible_UIElement m_PreviousItem = null;
 
     static List<AccessibleUIGroupRoot> m_ContainersToActivate = new List<AccessibleUIGroupRoot>();
 
@@ -345,7 +345,6 @@ public class UAP_AccessibilityManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
-
     //////////////////////////////////////////////////////////////////////////
 
     void OnDestroy()
@@ -505,7 +504,7 @@ public class UAP_AccessibilityManager : MonoBehaviour
         for (int l = 1; l < localizationLines.Length; l++)
         {
             string[] lineEntries = localizationLines[l].Split('\t');
-            string key = lineEntries[0].Trim();
+            string key = lineEntries[0].Trim(); // the key can have whitespace although it is not a good practice 
 
             // Skip empty lines, or those that don't have enough entries for this particular language
             if (string.IsNullOrEmpty(key) || lineEntries.Length <= currentLanguageIndex)
@@ -1151,7 +1150,7 @@ public class UAP_AccessibilityManager : MonoBehaviour
 
     //////////////////////////////////////////////////////////////////////////
 
-    private bool IsPositionOverElement(Vector2 fingerPos, AccessibleUIGroupRoot.Accessible_UIElement element)
+    public bool IsPositionOverElement(Vector2 fingerPos, AccessibleUIGroupRoot.Accessible_UIElement element)
     {
         // 3D elements are handled differently, since they're on-screen dimension must be calculated (and estimated)
         if (element.m_Object.Is3DElement())
@@ -3585,12 +3584,12 @@ public class UAP_AccessibilityManager : MonoBehaviour
 
     //////////////////////////////////////////////////////////////////////////
 
-    private void DecrementUIElement()
+    public void DecrementUIElement()
     {
         if (!HandleUI())
             return;
 
-        //Debug.Log("Jumping to previous UI element");
+        Debug.Log("Jumping to previous UI element");
         AccessibleUIGroupRoot.Accessible_UIElement prevItem = m_CurrentItem;
         int currentContainerIndex = m_ActiveContainerIndex;
 
@@ -3648,12 +3647,12 @@ public class UAP_AccessibilityManager : MonoBehaviour
 
     //////////////////////////////////////////////////////////////////////////
 
-    private void IncrementUIElement()
+    public void IncrementUIElement()
     {
         if (!HandleUI())
             return;
 
-        //Debug.Log("Jumping to next UI element");
+        Debug.Log("Jumping to next UI element");
 
         AccessibleUIGroupRoot.Accessible_UIElement prevItem = m_CurrentItem;
         int currentContainerIndex = m_ActiveContainerIndex;
@@ -4280,7 +4279,6 @@ public class UAP_AccessibilityManager : MonoBehaviour
     static public void RegisterOnPauseToggledCallback(OnPauseToggleCallbackFunc func)
     {
         Initialize();
-
         instance.m_OnPauseToggleCallbacks += func;
     }
 
@@ -4318,6 +4316,44 @@ public class UAP_AccessibilityManager : MonoBehaviour
         Initialize();
 
         instance.m_OnBackCallbacks -= func;
+    }
+
+    static public void UnregisterAll()
+    {
+
+        Debug.Log("unregister all callback from UAP ");
+        Initialize();
+        // on pause toggle call back
+        System.Delegate[] handlers = instance.m_OnPauseToggleCallbacks?.GetInvocationList();
+        if (handlers != null)
+            foreach (var d in handlers)
+                // UnregisterOnPauseToggledCallback(d as OnPauseToggleCallbackFunc);
+                instance.m_OnPauseToggleCallbacks -= (d as OnPauseToggleCallbackFunc);
+
+        // on back call back 
+        handlers = instance.m_OnBackCallbacks?.GetInvocationList();
+        if (handlers != null)
+            foreach (var d in handlers)
+                instance.m_OnBackCallbacks -= (d as OnTapEvent);
+
+        // on three finger double tap 
+        handlers = instance.m_OnThreeFingerDoubleTapCallbacks?.GetInvocationList();
+        if (handlers != null)
+            foreach (var d in handlers)
+                instance.m_OnThreeFingerDoubleTapCallbacks -= (d as OnTapEvent);
+
+        // on three fingers single tap 
+        handlers = instance.m_OnThreeFingerSingleTapCallbacks?.GetInvocationList();
+        if (handlers != null)
+            foreach (var d in handlers)
+                instance.m_OnThreeFingerSingleTapCallbacks -= (d as OnTapEvent);
+
+        // on  two finger single tap 
+        handlers = instance.m_OnTwoFingerSingleTapCallbacks?.GetInvocationList();
+        if (handlers != null)
+            foreach (var d in handlers)
+                instance.m_OnTwoFingerSingleTapCallbacks -= (d as OnTapEvent);
+
     }
 
     //////////////////////////////////////////////////////////////////////////

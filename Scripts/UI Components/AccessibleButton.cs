@@ -4,29 +4,29 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-[AddComponentMenu("Accessibility/UI/Accessible Button")]
+[AddComponentMenu("Accessibility/UI/Accessible Button"), RequireComponent(typeof(Button))]
 public class AccessibleButton : UAP_BaseElement
 {
 
-	//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 
-	AccessibleButton()
-	{
-		m_Type = AccessibleUIGroupRoot.EUIElement.EButton;
-	}
+    AccessibleButton()
+    {
+        m_Type = AccessibleUIGroupRoot.EUIElement.EButton;
+    }
 
-	//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 
-	protected override void OnInteract()
-	{
-		// Press button
-		Button button = GetButton();
-		if (button != null)
-		{
-			var pointer = new PointerEventData(EventSystem.current); // pointer event for Execute
-			button.OnPointerClick(pointer);
-			return;
-		}
+    protected override void OnInteract()
+    {
+        // Press button
+        Button button = GetButton();
+        if (button != null)
+        {
+            var pointer = new PointerEventData(EventSystem.current); // pointer event for Execute
+            button.OnPointerClick(pointer);
+            return;
+        }
 
 #if ACCESS_NGUI
 		UIButton nGUIButton = GetNGUIButton();
@@ -49,41 +49,41 @@ public class AccessibleButton : UAP_BaseElement
 			}
 		}
 #endif
-	}
+    }
 
-	//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 
-	public override bool IsElementActive()
-	{
-		// Return whether this button is usable, and visible
-		if (!base.IsElementActive())
-			return false;
+    public override bool IsElementActive()
+    {
+        // Return whether this button is usable, and visible
+        if (!base.IsElementActive())
+            return false;
 
-		if (m_ReferenceElement != null)
-			if (!m_ReferenceElement.gameObject.activeInHierarchy)
-				return false;
+        if (m_ReferenceElement != null)
+            if (!m_ReferenceElement.gameObject.activeInHierarchy)
+                return false;
 
-		if (!UAP_AccessibilityManager.GetSpeakDisabledInteractables())
-			if (!IsInteractable())
-				return false;
+        if (!UAP_AccessibilityManager.GetSpeakDisabledInteractables())
+            if (!IsInteractable())
+                return false;
 
-		return true;
-	}
+        return true;
+    }
 
-	//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 
-	private Button GetButton()
-	{
-		Button refButton = null;
-		if (m_ReferenceElement != null && m_ReferenceElement.activeInHierarchy)
-			refButton = m_ReferenceElement.GetComponent<Button>();
-		if (refButton == null && gameObject.activeInHierarchy)
-			refButton = gameObject.GetComponent<Button>();
+    private Button GetButton()
+    {
+        Button refButton = null;
+        if (m_ReferenceElement != null && m_ReferenceElement.activeInHierarchy)
+            refButton = m_ReferenceElement.GetComponent<Button>();
+        if (refButton == null && gameObject.activeInHierarchy)
+            refButton = gameObject.GetComponent<Button>();
 
-		return refButton;
-	}
+        return refButton;
+    }
 
-	//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 
 #if ACCESS_NGUI
 	private UIButton GetNGUIButton()
@@ -109,20 +109,20 @@ public class AccessibleButton : UAP_BaseElement
 	}
 #endif
 
-	//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 
-	public override bool IsInteractable()
-	{
-		Button buttonComponent = GetButton();
-		if (buttonComponent != null)
-		{
-			if (buttonComponent.enabled == false || buttonComponent.IsInteractable() == false)
-				return false;
-			else
-				return true;
-		}
+    public override bool IsInteractable()
+    {
+        Button buttonComponent = GetButton();
+        if (buttonComponent != null)
+        {
+            if (buttonComponent.enabled == false || buttonComponent.IsInteractable() == false)
+                return false;
+            else
+                return true;
+        }
 
-		// NGUI
+        // NGUI
 #if ACCESS_NGUI
 		UIButton nGUIButtonComponent = GetNGUIButton();
 		if (nGUIButtonComponent != null)
@@ -148,44 +148,44 @@ public class AccessibleButton : UAP_BaseElement
 
 #endif
 
-		// We couldn't find any buttons...
-		return false;
-	}
+        // We couldn't find any buttons...
+        return false;
+    }
 
-	//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 
-	public override bool AutoFillTextLabel()
-	{
-		if (base.AutoFillTextLabel())
-			return true;
+    public override bool AutoFillTextLabel()
+    {
+        if (base.AutoFillTextLabel())
+            return true;
 
-		bool found = false;
+        bool found = false;
 
-		// Unity UI
-		//////////////////////////////////////////////////////////////////////////
-		{
-			// Try to find a label in the button's children
-			Transform textLabel = gameObject.transform.Find("Text");
-			if (textLabel != null)
-			{
-				Text label = textLabel.gameObject.GetComponent<Text>();
-				if (label != null)
-				{
-					m_Text = label.text;
-					found = true;
-				}
-			}
+        // Unity UI
+        //////////////////////////////////////////////////////////////////////////
+        {
+            // Try to find a label in the button's children
+            Transform textLabel = gameObject.transform.Find("Text");
+            if (textLabel != null)
+            {
+                Text label = textLabel.gameObject.GetComponent<Text>();
+                if (label != null)
+                {
+                    m_Text = label.text;
+                    found = true;
+                }
+            }
 
-			if (!found)
-			{
-				Text label = gameObject.GetComponentInChildren<Text>();
-				if (label != null)
-				{
-					m_Text = label.text;
-					found = true;
-				}
-			}
-		}
+            if (!found)
+            {
+                Text label = gameObject.GetComponentInChildren<Text>();
+                if (label != null)
+                {
+                    m_Text = label.text;
+                    found = true;
+                }
+            }
+        }
 
 #if ACCESS_NGUI
 		// NGUI
@@ -214,46 +214,46 @@ public class AccessibleButton : UAP_BaseElement
 		}
 #endif
 
-		// if nothing, use the GameObject name
-		if (!found)
-			m_Text = gameObject.name;
+        // if nothing, use the GameObject name
+        if (!found)
+            m_Text = gameObject.name;
 
-		return found;
-	}
+        return found;
+    }
 
-	//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 
-	protected override void AutoInitialize()
-	{
-		if (m_TryToReadLabel)
-		{
-			bool found = false;
+    protected override void AutoInitialize()
+    {
+        if (m_TryToReadLabel)
+        {
+            bool found = false;
 
-			// Unity UI
-			//////////////////////////////////////////////////////////////////////////
-			{
-				// Try to find a label in the button's children
-				Transform textLabel = gameObject.transform.Find("Text");
-				if (textLabel != null)
-				{
-					Text label = textLabel.gameObject.GetComponent<Text>();
-					if (label != null)
-					{
-						m_NameLabel = label.gameObject;
-						found = true;
-					}
-				}
+            // Unity UI
+            //////////////////////////////////////////////////////////////////////////
+            {
+                // Try to find a label in the button's children
+                Transform textLabel = gameObject.transform.Find("Text");
+                if (textLabel != null)
+                {
+                    Text label = textLabel.gameObject.GetComponent<Text>();
+                    if (label != null)
+                    {
+                        m_NameLabel = label.gameObject;
+                        found = true;
+                    }
+                }
 
-				if (!found)
-				{
-					Text label = gameObject.GetComponentInChildren<Text>();
-					if (label != null)
-					{
-						m_NameLabel = label.gameObject;
-						found = true;
-					}
-				}
-			}
+                if (!found)
+                {
+                    Text label = gameObject.GetComponentInChildren<Text>();
+                    if (label != null)
+                    {
+                        m_NameLabel = label.gameObject;
+                        found = true;
+                    }
+                }
+            }
 
 #if ACCESS_NGUI
 			// NGUI
@@ -281,17 +281,17 @@ public class AccessibleButton : UAP_BaseElement
 				}
 			}
 #endif
-		}
-		else
-		{
-			m_NameLabel = null;
-		}
-	}
+        }
+        else
+        {
+            m_NameLabel = null;
+        }
+    }
 
-	//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 
-	protected override void OnHoverHighlight(bool enable)
-	{
+    protected override void OnHoverHighlight(bool enable)
+    {
 #if ACCESS_NGUI
 		UIButton nGUIButton = GetNGUIButton();
 		if (nGUIButton != null)
@@ -302,19 +302,19 @@ public class AccessibleButton : UAP_BaseElement
 				nGUIButton.SetState(IsInteractable() ? UIButtonColor.State.Normal : UIButtonColor.State.Disabled, false);
 		}
 #else
-		Button button = GetButton();
-		if (button != null)
-		{
-			var pointer = new PointerEventData(EventSystem.current); // pointer event for Execute
-			if (enable)
-				button.OnPointerEnter(pointer);
-			else
-				button.OnPointerExit(pointer);
-		}
+        Button button = GetButton();
+        if (button != null)
+        {
+            var pointer = new PointerEventData(EventSystem.current); // pointer event for Execute
+            if (enable)
+                button.OnPointerEnter(pointer);
+            else
+                button.OnPointerExit(pointer);
+        }
 #endif
-	}
+    }
 
-	//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 
 }
 

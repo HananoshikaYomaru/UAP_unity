@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-[AddComponentMenu("Accessibility/UI/Accessible Button Extend")]
+[AddComponentMenu("Accessibility/UI/Accessible Button Extend"), RequireComponent(typeof(Button))]
 public class AccessibleButtonExtend : UAP_BaseElement
 {
 

@@ -4,7 +4,7 @@ using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-[AddComponentMenu("Accessibility/UI/Accessible Toggle Extend")]
+[AddComponentMenu("Accessibility/UI/Accessible Toggle Extend"), RequireComponent(typeof(Toggle))]
 public class AccessibleToggleExtend : UAP_BaseElement
 {
     public bool m_UseCustomOnOff = false;

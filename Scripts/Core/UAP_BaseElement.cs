@@ -89,7 +89,7 @@ public abstract class UAP_BaseElement : MonoBehaviour
     // My owner
     AccessibleUIGroupRoot AUIContainer = null;
 
-    public bool m_CustomHint = false;
+    public bool m_CustomHint = true;
     public AudioClip m_HintAsAudio = null;
     public string m_Hint = "";
     public bool m_HintIsLocalizationKey = false;

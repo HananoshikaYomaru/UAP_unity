@@ -12,49 +12,49 @@ public class AccessibleTextEdit : UAP_BaseElement
 	private EventDelegate m_Callback = null;
 #endif
 
-	string prevText = "";
-	string deltaText = "";
+    string prevText = "";
+    string deltaText = "";
 
-	//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 
-	AccessibleTextEdit()
-	{
-		m_Type = AccessibleUIGroupRoot.EUIElement.ETextEdit;
-	}
+    AccessibleTextEdit()
+    {
+        m_Type = AccessibleUIGroupRoot.EUIElement.ETextEdit;
+    }
 
-	//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 
-	public override bool IsElementActive()
-	{
-		// Return whether this element is visible (and maybe usable)
-		if (!base.IsElementActive())
-			return false;
+    public override bool IsElementActive()
+    {
+        // Return whether this element is visible (and maybe usable)
+        if (!base.IsElementActive())
+            return false;
 
-		if (m_ReferenceElement != null)
-			if (!m_ReferenceElement.gameObject.activeInHierarchy)
-				return false;
+        if (m_ReferenceElement != null)
+            if (!m_ReferenceElement.gameObject.activeInHierarchy)
+                return false;
 
-		if (!UAP_AccessibilityManager.GetSpeakDisabledInteractables())
-			if (!IsInteractable())
-				return false;
+        if (!UAP_AccessibilityManager.GetSpeakDisabledInteractables())
+            if (!IsInteractable())
+                return false;
 
-		return true;
-	}
+        return true;
+    }
 
-	//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 
-	InputField GetInputField()
-	{
-		InputField refElement = null;
-		if (m_ReferenceElement != null)
-			refElement = m_ReferenceElement.GetComponent<InputField>();
-		if (refElement == null)
-			refElement = GetComponent<InputField>();
+    InputField GetInputField()
+    {
+        InputField refElement = null;
+        if (m_ReferenceElement != null)
+            refElement = m_ReferenceElement.GetComponent<InputField>();
+        if (refElement == null)
+            refElement = GetComponent<InputField>();
 
-		return refElement;
-	}
+        return refElement;
+    }
 
-	//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 
 #if ACCESS_NGUI
 	private UIInput GetNGUIInputField()
@@ -69,21 +69,21 @@ public class AccessibleTextEdit : UAP_BaseElement
 	}
 #endif
 
-	//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 
-	public override string GetCurrentValueAsText()
-	{
-		// If this is a password input, do NOT deliver the actual text back
-		if (IsPassword())
-			return UAP_AccessibilityManager.Localize_Internal("Keyboard_PasswordHidden");
-		return GetValueFromEditBox();
-	}
+    public override string GetCurrentValueAsText()
+    {
+        // If this is a password input, do NOT deliver the actual text back
+        if (IsPassword())
+            return UAP_AccessibilityManager.Localize_Internal("Keyboard_PasswordHidden");
+        return GetValueFromEditBox();
+    }
 
-	private string GetValueFromEditBox()
-	{
-		InputField inputField = GetInputField();
-		if (inputField != null)
-			return inputField.text;
+    private string GetValueFromEditBox()
+    {
+        InputField inputField = GetInputField();
+        if (inputField != null)
+            return inputField.text;
 
 #if ACCESS_NGUI
 		UIInput element = GetNGUIInputField();
@@ -91,21 +91,21 @@ public class AccessibleTextEdit : UAP_BaseElement
 			return element.value;
 #endif
 
-		return "";
-	}
+        return "";
+    }
 
-	//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 
-	private bool IsPassword()
-	{
-		// Unity UI
-		InputField inputField = GetInputField();
-		if (inputField != null)
-		{
-			return (inputField.contentType == InputField.ContentType.Password);
-		}
+    private bool IsPassword()
+    {
+        // Unity UI
+        InputField inputField = GetInputField();
+        if (inputField != null)
+        {
+            return (inputField.contentType == InputField.ContentType.Password);
+        }
 
-		// NGUI
+        // NGUI
 #if ACCESS_NGUI
 		UIInput element = GetNGUIInputField();
 		if (element != null)
@@ -114,23 +114,23 @@ public class AccessibleTextEdit : UAP_BaseElement
 		}
 #endif
 
-		return false;
-	}
+        return false;
+    }
 
-	//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 
-	public override bool IsInteractable()
-	{
-		InputField inputField = GetInputField();
-		if (inputField != null)
-		{
-			if (inputField.enabled == false || inputField.interactable == false)
-				return false;
-			else
-				return true;
-		}
+    public override bool IsInteractable()
+    {
+        InputField inputField = GetInputField();
+        if (inputField != null)
+        {
+            if (inputField.enabled == false || inputField.interactable == false)
+                return false;
+            else
+                return true;
+        }
 
-		// NGUI
+        // NGUI
 #if ACCESS_NGUI
 		UIInput element = GetNGUIInputField();
 		if (element != null)
@@ -143,37 +143,37 @@ public class AccessibleTextEdit : UAP_BaseElement
 
 #endif
 
-		// We couldn't find any buttons...
-		return false;
-	}
+        // We couldn't find any buttons...
+        return false;
+    }
 
-	//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 
-	protected override void OnInteract()
-	{
-		// Determine whether to use custom virtual keyboard or not - use virtual keyboard only on supported platforms and languages, and respect global setting
-		bool useBuiltinVirtualKeyboard = UAP_AccessibilityManager.ShouldUseBuiltInKeyboard();
-		bool isPassword = IsPassword();
-		bool isMultiline = false;
+    protected override void OnInteract()
+    {
+        // Determine whether to use custom virtual keyboard or not - use virtual keyboard only on supported platforms and languages, and respect global setting
+        bool useBuiltinVirtualKeyboard = UAP_AccessibilityManager.ShouldUseBuiltInKeyboard();
+        bool isPassword = IsPassword();
+        bool isMultiline = false;
 
-		// Unity UI
-		InputField inputField = GetInputField();
-		if (inputField != null)
-		{
-			prevText = inputField.text;
-			deltaText = prevText;
+        // Unity UI
+        InputField inputField = GetInputField();
+        if (inputField != null)
+        {
+            prevText = inputField.text;
+            deltaText = prevText;
 
-			// Give the Text Field the focus (to bring up the keyboard entry)
-			if (!useBuiltinVirtualKeyboard)
-			{
-				inputField.onValueChanged.AddListener(delegate { ValueChangeCheck(); });
-				EventSystem.current.SetSelectedGameObject(inputField.gameObject);
-			}
-			else
-			{
-				isMultiline = inputField.multiLine;
-			}
-		}
+            // Give the Text Field the focus (to bring up the keyboard entry)
+            if (!useBuiltinVirtualKeyboard)
+            {
+                inputField.onValueChanged.AddListener(delegate { ValueChangeCheck(); });
+                EventSystem.current.SetSelectedGameObject(inputField.gameObject);
+            }
+            else
+            {
+                isMultiline = inputField.multiLine;
+            }
+        }
 
 #if ACCESS_NGUI
 		UIInput element = GetNGUIInputField();
@@ -203,32 +203,32 @@ public class AccessibleTextEdit : UAP_BaseElement
 		}
 #endif
 
-		if (useBuiltinVirtualKeyboard)
-		{
-			UAP_VirtualKeyboard.ShowOnscreenKeyboard(prevText, isPassword ? UAP_VirtualKeyboard.EKeyboardMode.Password : UAP_VirtualKeyboard.EKeyboardMode.Default, !isPassword, isMultiline);
-			UAP_VirtualKeyboard.SetOnFinishListener(OnInputFinished);
-		}
+        if (useBuiltinVirtualKeyboard)
+        {
+            UAP_VirtualKeyboard.ShowOnscreenKeyboard(prevText, isPassword ? UAP_VirtualKeyboard.EKeyboardMode.Password : UAP_VirtualKeyboard.EKeyboardMode.Default, !isPassword, isMultiline);
+            UAP_VirtualKeyboard.SetOnFinishListener(OnInputFinished);
+        }
 
 #if (UNITY_ANDROID || UNITY_IOS) && !UNITY_EDITOR
 		else 
 			TouchScreenKeyboard.Open(prevText);
 #endif
-	}
+    }
 
-	//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 
-	private void OnInputFinished(string editedText, bool wasConfirmed)
-	{
-		// Set the text (if needed)
-		if (wasConfirmed)
-		{
-			InputField inputField = GetInputField();
-			if (inputField != null)
-			{
-				inputField.text = editedText;
-				// Call the appropriate OnEndEdit function of Unity UI (developer might have set up callbacks) 
-				inputField.onEndEdit.Invoke(editedText);
-			}
+    private void OnInputFinished(string editedText, bool wasConfirmed)
+    {
+        // Set the text (if needed)
+        if (wasConfirmed)
+        {
+            InputField inputField = GetInputField();
+            if (inputField != null)
+            {
+                inputField.text = editedText;
+                // Call the appropriate OnEndEdit function of Unity UI (developer might have set up callbacks) 
+                inputField.onEndEdit.Invoke(editedText);
+            }
 
 #if ACCESS_NGUI
 		UIInput element = GetNGUIInputField();
@@ -239,23 +239,23 @@ public class AccessibleTextEdit : UAP_BaseElement
 			element.Submit();
 		}
 #endif
-		}
+        }
 
-		// Conclude the interaction with the UAP Accessibility Manager
-		UAP_AccessibilityManager.FinishCurrentInteraction();
-	}
+        // Conclude the interaction with the UAP Accessibility Manager
+        UAP_AccessibilityManager.FinishCurrentInteraction();
+    }
 
-	//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 
-	public void ValueChangeCheck()
-	{
-		string newText = "";
-		string fullText = "";
-		InputField inputField = GetInputField();
-		if (inputField != null)
-		{
-			newText = inputField.text;
-		}
+    public void ValueChangeCheck()
+    {
+        string newText = "";
+        string fullText = "";
+        InputField inputField = GetInputField();
+        if (inputField != null)
+        {
+            newText = inputField.text;
+        }
 
 #if ACCESS_NGUI
 		UIInput element = GetNGUIInputField();
@@ -265,27 +265,27 @@ public class AccessibleTextEdit : UAP_BaseElement
 		}
 #endif
 
-		fullText = newText;
-		// Remove the previous text from the string to get just the new bits
-		if (newText.StartsWith(deltaText))
-			newText = newText.Substring(deltaText.Length);
-		if (newText.Length > 0)
-			UAP_AccessibilityManager.Say(newText);
-		deltaText = fullText;
-	}
+        fullText = newText;
+        // Remove the previous text from the string to get just the new bits
+        if (newText.StartsWith(deltaText))
+            newText = newText.Substring(deltaText.Length);
+        if (newText.Length > 0)
+            UAP_AccessibilityManager.Say(newText);
+        deltaText = fullText;
+    }
 
-	//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 
-	protected override void OnInteractAbort()
-	{
-		InputField inputField = GetInputField();
-		if (inputField != null)
-		{
-			inputField.onValueChanged.RemoveListener(delegate { ValueChangeCheck(); });
+    protected override void OnInteractAbort()
+    {
+        InputField inputField = GetInputField();
+        if (inputField != null)
+        {
+            inputField.onValueChanged.RemoveListener(delegate { ValueChangeCheck(); });
 
-			// Restore previous value
-			inputField.text = prevText;
-		}
+            // Restore previous value
+            inputField.text = prevText;
+        }
 
 #if ACCESS_NGUI
 		UIInput element = GetNGUIInputField();
@@ -300,18 +300,18 @@ public class AccessibleTextEdit : UAP_BaseElement
 		}
 #endif
 
-		prevText = "";
-	}
+        prevText = "";
+    }
 
-	//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 
-	protected override void OnInteractEnd()
-	{
-		InputField inputField = GetInputField();
-		if (inputField != null)
-		{
-			inputField.onValueChanged.RemoveListener(delegate { ValueChangeCheck(); });
-		}
+    protected override void OnInteractEnd()
+    {
+        InputField inputField = GetInputField();
+        if (inputField != null)
+        {
+            inputField.onValueChanged.RemoveListener(delegate { ValueChangeCheck(); });
+        }
 
 #if ACCESS_NGUI
 		UIInput element = GetNGUIInputField();
@@ -323,21 +323,21 @@ public class AccessibleTextEdit : UAP_BaseElement
 		}
 #endif
 
-	}
+    }
 
-	//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 
-	protected override void OnHoverHighlight(bool enable)
-	{
-		InputField inputField = GetInputField();
-		if (inputField != null)
-		{
-			var pointer = new PointerEventData(EventSystem.current); // pointer event for Execute
-			if (enable)
-				inputField.OnPointerEnter(pointer);
-			else
-				inputField.OnPointerExit(pointer);
-		}
+    protected override void OnHoverHighlight(bool enable)
+    {
+        InputField inputField = GetInputField();
+        if (inputField != null)
+        {
+            var pointer = new PointerEventData(EventSystem.current); // pointer event for Execute
+            if (enable)
+                inputField.OnPointerEnter(pointer);
+            else
+                inputField.OnPointerExit(pointer);
+        }
 
 #if ACCESS_NGUI
 		UIInput element = GetNGUIInputField();
@@ -347,18 +347,18 @@ public class AccessibleTextEdit : UAP_BaseElement
 			//element.isSelected = true;
 		}
 #endif
-	}
+    }
 
-	//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 
-	public override bool AutoFillTextLabel()
-	{
-		// If there is no name label set, don't set anything as name
-		if (!base.AutoFillTextLabel())
-			m_Text = "";
+    public override bool AutoFillTextLabel()
+    {
+        // If there is no name label set, don't set anything as name
+        if (!base.AutoFillTextLabel())
+            m_Text = "";
 
-		return false;
-	}
+        return false;
+    }
 
-	//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 }
